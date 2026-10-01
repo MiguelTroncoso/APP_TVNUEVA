@@ -1,0 +1,28 @@
+LinkPlay v1.0.31 FINAL 4 — TV Focus Runtime Fix
+
+Motivo:
+La auditoría anterior fue estática: validó sintaxis, imports, JSON, navegación y consistencia de archivos. No podía confirmar visualmente el foco en un Android TV físico. El problema real era de runtime visual: el foco existía o el control podía moverse, pero el halo no se veía/era muy sutil o quedaba recortado por FlatList/tabbar.
+
+Correcciones aplicadas:
+1. FocusableButton ahora dibuja un halo propio cuando recibe onFocus.
+2. El halo no depende únicamente de Platform.isTV; aparece si Android/TV dispara onFocus.
+3. El foco usa doble borde: dorado + azul, escala y elevación alta.
+4. FlatList de carruseles ya no recorta componentes enfocados.
+5. Se agregó padding extra arriba/abajo en filas horizontales para que el halo no se corte.
+6. Grids de películas, series y TV en vivo ya no usan removeClippedSubviews.
+7. Bottom tab permite overflow visible y foco más fuerte.
+
+Archivos corregidos:
+- App.js
+- src/components/FocusableButton.js
+- src/components/ContentRow.js
+- src/screens/MoviesScreen.js
+- src/screens/SeriesScreen.js
+- src/screens/LiveTVScreen.js
+
+Prueba prioritaria:
+1. Instalar en Android TV.
+2. Abrir Home.
+3. Mover el control remoto por botones superiores, carruseles y bottom tab.
+4. Confirmar que aparece borde dorado/azul visible.
+5. Entrar a Películas/Series/TV y confirmar foco en categorías, cards y canales.

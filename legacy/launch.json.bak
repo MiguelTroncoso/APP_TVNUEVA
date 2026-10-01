@@ -1,0 +1,16 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "agenda-clinica",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--prefix",
+        "C:\\Users\\usuario\\Proyectos\\agenda-clinica"
+      ],
+      "port": 3000
+    }
+  ]
+}

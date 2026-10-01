@@ -1,0 +1,45 @@
+PASOS EN VS CODE / WINDOWS POWERSHELL
+
+1) Cierra Expo/Metro si está corriendo:
+   Ctrl + C
+
+2) Haz respaldo rápido del proyecto actual:
+   cd C:\Users\usuario\Proyectos\LinkPlay
+   Copy-Item -Recurse . ..\LinkPlay_BACKUP_antes_reparacion
+
+3) Descomprime el ZIP "linkplay_archivos_reemplazo_v1_0_14.zip".
+   Copia TODO su contenido encima de tu proyecto LinkPlay, respetando las carpetas.
+   Debes reemplazar estos archivos:
+   - app.json
+   - version.json
+   - src\services\xtream.js
+   - src\services\contentCache.js
+   - src\utils\tv.js
+   - src\screens\PlayerScreen.js
+   - src\screens\MovieDetailScreen.js
+   - src\screens\SeriesDetailScreen.js
+   - src\screens\MoviesScreen.js
+   - src\screens\SeriesScreen.js
+   - src\screens\LiveTVScreen.js
+   - src\screens\ContinueWatchingScreen.js
+   - src\screens\FavoritesScreen.js
+   - src\components\ContentRow.js
+
+4) Limpia caché y dependencias:
+   npm install
+   npx expo start -c
+
+5) Probar en celular:
+   npx expo start -c
+
+6) Crear build APK con EAS:
+   eas build -p android --profile preview
+
+7) Si quieres compilar localmente:
+   npx expo prebuild --platform android --clean
+   cd android
+   .\gradlew clean
+   .\gradlew assembleRelease
+
+8) Archivo generado localmente:
+   android\app\build\outputs\apk\release\app-release.apk

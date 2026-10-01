@@ -1,0 +1,80 @@
+AUDITORÍA LINKPLAY v1.0.31 FINAL 2 → FINAL 3 AUDIT
+
+Resultado general:
+- 50 archivos JS/JSX revisados con parser JSX/TypeScript.
+- 0 errores de parseo encontrados.
+- package.json, package-lock.json, app.json, eas.json y version.json parsean correctamente.
+- Importaciones relativas revisadas: 0 imports relativos rotos.
+- Búsqueda de errores recurrentes: sin doble coma ",,", sin ActivityAction.VIEW, sin unescape/escape deprecado, sin console.log directo fuera del logger.
+
+Hallazgos corregidos:
+1) Navegación segura
+- BackupScreen todavía usaba navigation.goBack() directo.
+- HistoryScreen todavía usaba navigation.goBack() directo.
+- Se reemplazó por safeBack + useSafeHardwareBack para evitar cierre de Android cuando el stack queda débil.
+
+2) PIN / regreso seguro
+- PinLockScreen usaba goBack directo en modo configuración.
+- Se agregó fallback a MainTabs cuando no hay stack para volver.
+
+3) Safe area / botones Android
+- Se aumentó reserva inferior mínima en Android para evitar que el bottom tab quede tapado por los botones del sistema.
+- Antes: mínimo 26px.
+- Ahora: mínimo 42px.
+- También se ajustó altura/padding del tab bar.
+
+4) AuthContext
+- Se eliminó uso de escape/unescape deprecado.
+- Se agregó codificación/decodificación UTF-8 segura para fallback de contraseña.
+- Se dejó log interno cuando falla carga de sesión guardada.
+
+5) EPGScreen
+- Se eliminó escape/unescape deprecado en safeDecode.
+- Se agregó decodeBase64Utf8 seguro.
+
+6) MovieDetailScreen
+- Se eliminó console.log directo.
+- Ahora usa logger.log.
+
+7) PlayerScreen / Seek
+- Se mantuvo función central de seek.
+- Se cambió prioridad: primero currentTime absoluto, luego seekBy como fallback.
+- Motivo: en algunas builds de expo-video, seekBy(delta) puede provocar reinicios en ciertos VOD.
+
+8) Lint / limpieza menor
+- Se quitó inicialización innecesaria de targetParams a undefined.
+- Se actualizó comentario de App.js a v1.0.31.
+
+Puntos validados por auditoría estática:
+- Navegación principal Stack + MainTabs.
+- ReturnRoute desde Player: LiveTV, Events, Downloads, Movies, Series, Watchlist, EPG, Stats, MovieDetail y SeriesDetail.
+- Sistema de descargas: estados activos, progreso, cancelar, pausar, reanudar, limpiar errores, validación de archivo descargado.
+- ESPN / Sports: funciones exportadas y flujo fetchTabScoreboard → fetchAllLive/fetchAllToday.
+- Eventos: carga categorías Xtream, prioridad, deduplicación, click directo al Player live.
+- Labels: limpieza de categorías/títulos sin romper acentos.
+- TV focus: FocusableButton aplica foco visual al recibir onFocus aunque Platform.isTV no sea perfecto.
+
+Limitaciones de esta prueba:
+- No se ejecutó build EAS real dentro del entorno.
+- No se pudo probar ESPN con red real desde aquí.
+- No se pudo instalar APK en Android TV físico desde aquí.
+- Las pruebas realizadas son estáticas/sintácticas y de consistencia de código.
+
+Recomendación antes del build:
+1. npm install
+2. npm dedupe
+3. npx expo-doctor
+4. npx expo start -c
+5. Probar en celular:
+   - Home
+   - Películas
+   - Series
+   - TV en vivo
+   - Player + volver
+   - Descargas
+6. Build recomendado:
+   eas build --platform android --profile preview --clear-cache
+
+Estado recomendado:
+- Usar esta versión como v1.0.31 FINAL 3 AUDIT TEST.
+- Si los testers ya tienen v1.0.31 por updater, subir como v1.0.32.
