@@ -183,6 +183,17 @@ export default function LiveTVScreen({ navigation, route }) {
 
   const isPinned = (ch) => pinnedIds.includes(String(ch.stream_id || ch.name));
 
+  // Conteo por categoría calculado una sola vez por cambio de canales (antes se
+  // recorría toda la lista de canales por cada chip en cada render).
+  const categoryCounts = useMemo(() => {
+    const counts = {};
+    channels.forEach(c => {
+      const key = String(c.category_id);
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+  }, [channels]);
+
   const sortedChannels = useMemo(() => {
     const pinned = filtered.filter(c => isPinned(c));
     const rest   = filtered.filter(c => !isPinned(c));
@@ -205,7 +216,7 @@ export default function LiveTVScreen({ navigation, route }) {
       <FlatList
         data={[{ category_id: null, category_name: 'Todos' }, ...categories]}
         renderItem={renderCategory}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => `cat-${item.category_id ?? 'all'}-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.catList}
@@ -217,7 +228,7 @@ export default function LiveTVScreen({ navigation, route }) {
   function renderCategory({ item, index }) {
     const count = !item.category_id
       ? channels.length
-      : channels.filter(c => String(c.category_id) === String(item.category_id)).length;
+      : (categoryCounts[String(item.category_id)] || 0);
     const label = item.category_id
       ? compactCategoryName(item.category_name, isTV ? 30 : 18)
       : cleanCategoryName(item.category_name || 'Todos');

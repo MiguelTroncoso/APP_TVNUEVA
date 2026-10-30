@@ -65,6 +65,13 @@ export const AuthProvider = ({ children }) => {
           } catch (_) {}
         }
 
+        // Sin contraseña recuperable la sesión queda a medias y toda llamada
+        // falla con errores confusos: mejor pedir login de nuevo.
+        if (!password) {
+          await AsyncStorage.removeItem(SESSION_KEY).catch(() => {});
+          return;
+        }
+
         setUser({ ...session.user, password });
         setServer(session.server);
         return;
@@ -74,7 +81,12 @@ export const AuthProvider = ({ children }) => {
       const oldStored = await AsyncStorage.getItem('superflash_session');
       if (oldStored) {
         const oldSession = JSON.parse(oldStored);
-        await _persistSession(oldSession.user, oldSession.server, oldSession.user?.password || '');
+        const oldPassword = oldSession.user?.password || '';
+        if (oldPassword) {
+          await _persistSession(oldSession.user, oldSession.server, oldPassword);
+          setUser({ ...oldSession.user, password: oldPassword });
+          setServer(oldSession.server);
+        }
         await AsyncStorage.removeItem('superflash_session');
       }
     } catch (e) {

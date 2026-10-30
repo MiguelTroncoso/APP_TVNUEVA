@@ -741,7 +741,7 @@ export default function PlayerScreen({ route, navigation }) {
       try { endSub.remove(); } catch (_) {}
       try { timeSub.remove(); } catch (_) {}
     };
-  }, [player, canPlay, hasNextEp, duration, resumePosition, startNextEpCountdown, playbackStarted, currentTime, playerStatus, type, stream, seriesInfo, markEpisodeWatched, addToContinueWatching, recordWatchSession, setStallState]);
+  }, [player, canPlay, hasNextEp, duration, resumePosition, startNextEpCountdown, playerStatus, type, stream, seriesInfo, markEpisodeWatched, addToContinueWatching, recordWatchSession, setStallState]);
 
   // Activar timeUpdate cada 1 segundo
   useEffect(() => {
@@ -764,9 +764,10 @@ export default function PlayerScreen({ route, navigation }) {
     const interval = setInterval(() => {
       if (isReleasedRef.current || isNavigatingBackRef.current) return;
 
-      const currentRaw = Number(player.currentTime ?? currentTime ?? 0);
+      const lastKnownTime = Number(playbackInfoRef.current.currentTime || 0);
+      const currentRaw = Number(player.currentTime ?? lastKnownTime);
       const bufferedRaw = Number(player.bufferedPosition ?? 0);
-      const current = Number.isFinite(currentRaw) ? currentRaw : Number(currentTime || 0);
+      const current = Number.isFinite(currentRaw) ? currentRaw : lastKnownTime;
       const buffered = Number.isFinite(bufferedRaw) ? bufferedRaw : 0;
       const ref = stallWatchRef.current;
       const playing = Boolean(player.playing ?? isPlaying);
@@ -860,7 +861,6 @@ export default function PlayerScreen({ route, navigation }) {
   }, [
     canPlay,
     clearControlsTimer,
-    currentTime,
     isPlaying,
     pipActive,
     playbackStarted,
@@ -1010,14 +1010,14 @@ export default function PlayerScreen({ route, navigation }) {
 
   const persistCurrentProgress = useCallback(async () => {
     if (!canPlay || type === 'live') return;
-    const position = Number(player.currentTime ?? currentTime ?? playbackInfoRef.current.currentTime ?? 0);
+    const position = Number(player.currentTime ?? playbackInfoRef.current.currentTime ?? 0);
     const total = Number(player.duration || duration || playbackInfoRef.current.duration || 0);
     if (!Number.isFinite(position) || position <= 0) return;
     const safeDuration = Number.isFinite(total) && total > position + 30 ? total : 0;
     try {
       await addToContinueWatching(stream, type, position * 1000, safeDuration * 1000);
     } catch (_) {}
-  }, [addToContinueWatching, canPlay, currentTime, duration, player, stream, type]);
+  }, [addToContinueWatching, canPlay, duration, player, stream, type]);
 
   const goBackSafe = useCallback(async () => {
     if (isNavigatingBackRef.current) return true;
