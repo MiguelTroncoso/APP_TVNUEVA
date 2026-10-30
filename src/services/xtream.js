@@ -29,23 +29,41 @@ const sp = (val = '') =>
 const base = (server) => server.endsWith('/') ? server : `${server}/`;
 const creds = (u, p) => `username=${sp(u)}&password=${sp(p)}`;
 
+const friendlyError = (e) => {
+  const msg = String(e?.message || '');
+  if (e?.name === 'AbortError' || /abort/i.test(msg)) return 'El servidor tardó demasiado en responder. Intenta de nuevo.';
+  if (/network request failed|failed to fetch/i.test(msg)) return 'No se pudo conectar con el servidor. Revisa tu internet.';
+  if (/^HTTP 5\d\d$/.test(msg)) return 'El servidor no está disponible en este momento.';
+  if (/json|unexpected/i.test(msg)) return 'El servidor respondió algo inesperado.';
+  return msg || 'No se pudo conectar al servidor';
+};
+
 export const login = async (server, username, password) => {
   try {
     const url = `${base(server)}player_api.php?${creds(username, password)}`;
     const res = await fetchWithTimeout(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    if (!data?.user_info || data?.user_info?.auth === 0)
+    const info = data?.user_info;
+    if (!info || info.auth === 0 || info.auth === '0')
       throw new Error('Credenciales inválidas');
+    const status = String(info.status || '').toLowerCase();
+    const exp = Number(info.exp_date);
+    if (status === 'banned' || status === 'disabled')
+      throw new Error('Tu cuenta está desactivada. Contacta a tu proveedor.');
+    if (status === 'expired' || (exp > 0 && exp < Date.now() / 1000))
+      throw new Error(exp > 0
+        ? `Tu suscripción venció el ${new Date(exp * 1000).toLocaleDateString('es-CL')}.`
+        : 'Tu suscripción venció.');
     return {
       success:    true,
-      userInfo:   data.user_info,
+      userInfo:   info,
       serverInfo: data.server_info,
     };
   } catch (e) {
     return {
       success: false,
-      error:   e.message || 'No se pudo conectar al servidor',
+      error:   friendlyError(e),
     };
   }
 };

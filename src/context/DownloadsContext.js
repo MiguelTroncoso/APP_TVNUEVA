@@ -132,6 +132,7 @@ export const DownloadsProvider = ({ children }) => {
   const downloadsRef = useRef(downloads);
   const activeDownloadsRef = useRef(activeDownloads);
   const activeTasksRef = useRef({});
+  const lastProgressAtRef = useRef({});
   const canceledRef = useRef({});
   const pauseRequestedRef = useRef({});
   const resumePromisesRef = useRef({});
@@ -391,6 +392,11 @@ export const DownloadsProvider = ({ children }) => {
             const written = progress.totalBytesWritten || 0;
             const percent = total > 0 ? written / total : Math.min(0.08 * attempt, 0.35);
             const safePercent = Math.min(Math.max(percent, 0.01), 0.99);
+            // Limitar a ~2 actualizaciones/seg: cada setState re-renderiza a todos
+            // los consumidores del contexto.
+            const now = Date.now();
+            if (now - (lastProgressAtRef.current[key] || 0) < 500) return;
+            lastProgressAtRef.current[key] = now;
             setProgressMap(prev => ({ ...prev, [key]: safePercent }));
             updateJob(key, { progress: safePercent, written, total, status: activeDownloadsRef.current[key]?.status === 'paused' ? 'paused' : 'downloading' });
           }

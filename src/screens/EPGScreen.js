@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TextInput, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
-import { getLiveStreams, getShortEPG } from '../services/xtream';
+import { useProfile } from '../context/ProfileContext';
+import { getLiveStreams, getShortEPG, isAdultContent } from '../services/xtream';
 import { getCache, saveCache } from '../services/contentCache';
 import { colors, shadows } from '../theme';
 import FocusableButton from '../components/FocusableButton';
@@ -39,6 +40,8 @@ const formatEpgTime = (value) => {
 export default function EPGScreen({ navigation }) {
   useSafeHardwareBack(navigation, 'Home');
   const { user, server } = useAuth();
+  const { activeProfile } = useProfile();
+  const epgRequestRef = useRef(0);
   const [channels, setChannels] = useState([]);
   const [selected, setSelected] = useState(null);
   const [epg, setEpg] = useState([]);
@@ -48,46 +51,64 @@ export default function EPGScreen({ navigation }) {
 
   useEffect(() => { loadChannels(); }, []);
 
-  const loadChannels = async () => {
+  const sanitize = (items = []) => (
+    activeProfile?.isKids
+      ? items.filter(c => !isAdultContent(c.category_name || '', c.name || ''))
+      : items
+  );
+
+  const loadChannels = async (forceRefresh = false) => {
     try {
       setLoading(true);
-      const cached = await getCache(server.url, user.username, 'live', 'all');
-      if (cached?.data?.length) {
-        setChannels(cached.data);
-        setSelected(cached.data[0]);
-        setLoading(false);
-        loadEpg(cached.data[0]);
-        if (cached.isFresh) return;
+      if (!forceRefresh) {
+        const cached = await getCache(server.url, user.username, 'live', 'all');
+        if (cached?.data?.length) {
+          const safe = sanitize(cached.data);
+          setChannels(safe);
+          setSelected(safe[0] || null);
+          setLoading(false);
+          if (safe[0]) loadEpg(safe[0]);
+          if (cached.isFresh) return;
+        }
       }
       const data = await getLiveStreams(server.url, user.username, user.password);
-      const list = Array.isArray(data) ? data : [];
+      const raw = Array.isArray(data) ? data : [];
+      const list = sanitize(raw);
       setChannels(list);
-      await saveCache(server.url, user.username, 'live', 'all', list);
-      if (list[0]) { setSelected(list[0]); loadEpg(list[0]); }
+      await saveCache(server.url, user.username, 'live', 'all', raw);
+      if (list[0]) { setSelected(list[0]); loadEpg(list[0], forceRefresh); }
     } catch (e) {
       logger.log('EPG channels error:', e?.message || e);
     } finally { setLoading(false); }
   };
 
-  const loadEpg = async (channel) => {
+  const loadEpg = async (channel, forceRefresh = false) => {
     if (!channel?.stream_id) return;
+    // Solo la última petición puede escribir el resultado: evita que una
+    // respuesta tardía de otro canal pise la guía del canal actual.
+    const requestId = ++epgRequestRef.current;
+    const isStale = () => epgRequestRef.current !== requestId;
     setSelected(channel);
     setEpgLoading(true);
     try {
       const key = `stream-${channel.stream_id}`;
-      const cached = await getCache(server.url, user.username, 'epg', key);
-      if (cached?.data?.length) {
-        setEpg(cached.data);
-        if (cached.isFresh) return;
+      if (!forceRefresh) {
+        const cached = await getCache(server.url, user.username, 'epg', key);
+        if (isStale()) return;
+        if (cached?.data?.length) {
+          setEpg(cached.data);
+          if (cached.isFresh) { setEpgLoading(false); return; }
+        }
       }
       const data = await getShortEPG(server.url, user.username, user.password, channel.stream_id, 50);
+      if (isStale()) return;
       const list = Array.isArray(data) ? data : [];
       setEpg(list);
       await saveCache(server.url, user.username, 'epg', key, list);
     } catch (e) {
       logger.log('EPG load error:', e?.message || e);
-      setEpg([]);
-    } finally { setEpgLoading(false); }
+      if (!isStale()) setEpg([]);
+    } finally { if (!isStale()) setEpgLoading(false); }
   };
 
   const filtered = useMemo(() => {
@@ -130,7 +151,7 @@ export default function EPGScreen({ navigation }) {
       <View style={styles.header}>
         <FocusableButton onPress={() => safeBack(navigation, 'Home')} style={styles.backBtn}><Text style={styles.backText}>← Volver</Text></FocusableButton>
         <Text style={styles.title}>Guía EPG</Text>
-        <FocusableButton onPress={loadChannels} style={styles.refreshBtn}><Text style={styles.refreshText}>Actualizar</Text></FocusableButton>
+        <FocusableButton onPress={() => loadChannels(true)} style={styles.refreshBtn}><Text style={styles.refreshText}>Actualizar</Text></FocusableButton>
       </View>
 
       <View style={styles.body}>

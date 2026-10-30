@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../context/AuthContext';
-import { getLiveStreams, getVodStreams, getSeries } from '../services/xtream';
+import { useProfile } from '../context/ProfileContext';
+import { getLiveStreams, getVodStreams, getSeries, isAdultContent } from '../services/xtream';
 import { getCache } from '../services/contentCache';
 import { colors } from '../theme';
 import FocusableButton from '../components/FocusableButton';
@@ -25,6 +26,8 @@ const MAX_HISTORY = 10;
 export default function SearchScreen({ route, navigation }) {
   useSafeHardwareBack(navigation, 'Home');
   const { user, server } = useAuth();
+  const { activeProfile } = useProfile();
+  const isKids = Boolean(activeProfile?.isKids);
   const [query, setQuery]         = useState('');
   const [results, setResults]     = useState({ live: [], movies: [], series: [] });
   const [loading, setLoading]     = useState(false);
@@ -83,6 +86,7 @@ export default function SearchScreen({ route, navigation }) {
     const filter = (items) =>
       (items || []).filter(i =>
         (i.name || i.title || '').toLowerCase().includes(clean)
+        && !(isKids && isAdultContent(i.category_name || '', i.name || i.title || ''))
       ).slice(0, 20);
 
     try {
@@ -120,7 +124,7 @@ export default function SearchScreen({ route, navigation }) {
     } finally {
       if (searchRequestRef.current === requestId) setLoading(false);
     }
-  }, [user, server]);
+  }, [user, server, isKids]);
 
   const handleChangeText = (text) => {
     setQuery(text);
