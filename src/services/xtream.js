@@ -53,7 +53,7 @@ export const login = async (server, username, password) => {
       throw new Error('Tu cuenta está desactivada. Contacta a tu proveedor.');
     if (status === 'expired' || (exp > 0 && exp < Date.now() / 1000))
       throw new Error(exp > 0
-        ? `Tu suscripción venció el ${new Date(exp * 1000).toLocaleDateString('es-ES')}.`
+        ? `Tu suscripción venció el ${new Date(exp * 1000).toLocaleDateString('es-CL')}.`
         : 'Tu suscripción venció.');
     return {
       success:    true,
