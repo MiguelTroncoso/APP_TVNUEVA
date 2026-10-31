@@ -11,8 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import logger from '../utils/logger';
 
-const NOTIF_KEY = 'superflash_last_content_snapshot';
-const PERM_KEY = 'superflash_notif_enabled';
+const NOTIF_KEY = 'tvnueva_last_content_snapshot';
+const PERM_KEY = 'tvnueva_notif_enabled';
 
 const isExpoGo = Constants?.appOwnership === 'expo';
 let notificationModule = null;

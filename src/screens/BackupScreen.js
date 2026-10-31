@@ -38,7 +38,7 @@ export default function BackupScreen({ navigation }) {
     setLoading(true);
     try {
       const allKeys = await AsyncStorage.getAllKeys();
-      const superflashKeys = allKeys.filter(k => k.startsWith('superflash_'));
+      const superflashKeys = allKeys.filter(k => k.startsWith('tvnueva_'));
       const pairs = await AsyncStorage.multiGet(superflashKeys);
       const data = {};
       pairs.forEach(([k, v]) => { try { data[k] = JSON.parse(v); } catch (_) { data[k] = v; } });
@@ -54,7 +54,7 @@ export default function BackupScreen({ navigation }) {
         },
       };
 
-      const path = `${FileSystem.cacheDirectory}superflash_backup_${Date.now()}.json`;
+      const path = `${FileSystem.cacheDirectory}tvnueva_backup_${Date.now()}.json`;
       await FileSystem.writeAsStringAsync(path, JSON.stringify(backup, null, 2));
       await Sharing.shareAsync(path, { mimeType: 'application/json', dialogTitle: 'Exportar backup Super Flash' });
     } catch (e) {
@@ -157,7 +157,7 @@ export default function BackupScreen({ navigation }) {
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Borrar todo', style: 'destructive', onPress: async () => {
           const allKeys = await AsyncStorage.getAllKeys();
-          const superflashKeys = allKeys.filter(k => k.startsWith('superflash_library'));
+          const superflashKeys = allKeys.filter(k => k.startsWith('tvnueva_library'));
           await AsyncStorage.multiRemove(superflashKeys);
           Alert.alert('Listo', 'Datos borrados. Reinicia la app.');
           safeBack(navigation, 'Home');

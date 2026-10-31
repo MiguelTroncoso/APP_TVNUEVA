@@ -6,9 +6,9 @@ import logger from '../utils/logger';
 
 const AuthContext = createContext();
 
-const SESSION_KEY  = 'superflash_session_v2';
-const CREDS_KEY    = 'superflash_credentials';
-const CREDS_BACKUP = 'superflash_creds_backup'; // fallback si SecureStore falla
+const SESSION_KEY  = 'tvnueva_session_v2';
+const CREDS_KEY    = 'tvnueva_credentials';
+const CREDS_BACKUP = 'tvnueva_creds_backup'; // fallback si SecureStore falla
 
 const utf8ToBase64 = (value = '') => {
   const utf8 = encodeURIComponent(String(value || '')).replace(/%([0-9A-F]{2})/g, (_, hex) =>
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Migrar sesión v1
-      const oldStored = await AsyncStorage.getItem('superflash_session');
+      const oldStored = await AsyncStorage.getItem('tvnueva_session');
       if (oldStored) {
         const oldSession = JSON.parse(oldStored);
         const oldPassword = oldSession.user?.password || '';
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
           setUser({ ...oldSession.user, password: oldPassword });
           setServer(oldSession.server);
         }
-        await AsyncStorage.removeItem('superflash_session');
+        await AsyncStorage.removeItem('tvnueva_session');
       }
     } catch (e) {
       logger.log('Error cargando sesión guardada:', e?.message || e);
@@ -154,7 +154,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     await AsyncStorage.removeItem(SESSION_KEY);
-    await AsyncStorage.removeItem('superflash_session'); // limpia formato viejo
+    await AsyncStorage.removeItem('tvnueva_session'); // limpia formato viejo
     await AsyncStorage.removeItem(CREDS_BACKUP);       // limpia backup de password
     try { await SecureStore.deleteItemAsync(CREDS_KEY); } catch (_) {}
     setUser(null);

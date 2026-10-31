@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Super Flash",
-    "slug": "super-flash",
+    "name": "TV Nueva",
+    "slug": "tv-nueva",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "scheme": "superflash",
+    "scheme": "tvnueva",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.migueltroncoso.superflash",
+      "bundleIdentifier": "com.migueltroncoso.tvnueva",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio",
@@ -29,7 +29,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.migueltroncoso.superflash",
+      "package": "com.migueltroncoso.tvnueva",
       "versionCode": 1,
       "permissions": [
         "INTERNET",
@@ -96,10 +96,7 @@
       ]
     ],
     "extra": {
-      "expo-navigation-bar": {},
-      "eas": {
-        "projectId": "b36644fe-bc77-4ecb-8284-8bdb8f93c85c"
-      }
+      "expo-navigation-bar": {}
     },
     "owner": "migxelito94"
   }

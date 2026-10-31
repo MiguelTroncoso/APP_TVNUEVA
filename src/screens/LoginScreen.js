@@ -123,7 +123,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.footer}>Super Flash v{versionInfo.version}</Text>
+        <Text style={styles.footer}>TV Nueva v{versionInfo.version}</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

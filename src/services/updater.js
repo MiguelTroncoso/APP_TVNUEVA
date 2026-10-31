@@ -4,14 +4,14 @@ import versionInfo from '../../version.json';
 import logger from '../utils/logger';
 
 const VERSION_CHECK_URL =
-  'https://raw.githubusercontent.com/MiguelTroncoso/App_SuperFlash_Tv/main/version.json';
+  'https://raw.githubusercontent.com/MiguelTroncoso/APP_TVNUEVA/main/version.json';
 
 const APK_MIME = 'application/vnd.android.package-archive';
 const ANDROID_ACTION_VIEW = 'android.intent.action.VIEW';
 const ANDROID_ACTION_INSTALL_PACKAGE = 'android.intent.action.INSTALL_PACKAGE';
 const ANDROID_UNKNOWN_SOURCES_SETTINGS = 'android.settings.MANAGE_UNKNOWN_APP_SOURCES';
 const ANDROID_APPLICATION_DETAILS_SETTINGS = 'android.settings.APPLICATION_DETAILS_SETTINGS';
-const APP_PACKAGE = 'com.migueltroncoso.superflash';
+const APP_PACKAGE = 'com.migueltroncoso.tvnueva';
 
 // Android intent flags
 const FLAG_GRANT_READ_URI_PERMISSION = 1;
@@ -26,7 +26,7 @@ const normalizeVersion = (value) => String(value || '').trim().replace(/^v/i, ''
 const safeFileVersion = (value) => normalizeVersion(value).replace(/[^0-9A-Za-z._-]/g, '_');
 
 const getApkDirectory = () => `${FileSystem.documentDirectory || FileSystem.cacheDirectory}updates/`;
-const getApkUri = (version) => `${getApkDirectory()}SuperFlash-v${safeFileVersion(version)}.apk`;
+const getApkUri = (version) => `${getApkDirectory()}TVNueva-v${safeFileVersion(version)}.apk`;
 
 const fetchWithTimeout = (url, ms = 10000) => {
   const controller = new AbortController();
@@ -214,7 +214,7 @@ const waitForReturnAndPromptInstall = (fileUri) => {
 const promptInstallPermission = (fileUri) => {
   Alert.alert(
     '⚙️ Permiso requerido',
-    'Android necesita que habilites “Instalar apps desconocidas” para Super Flash.\n\nActiva el permiso y vuelve a la app para instalar la actualización ya descargada.',
+    'Android necesita que habilites “Instalar apps desconocidas” para TV Nueva.\n\nActiva el permiso y vuelve a la app para instalar la actualización ya descargada.',
     [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -256,7 +256,7 @@ export const checkForUpdates = async (silent = false) => {
     if (remote.versionCode <= currentCode) {
       if (!silent) {
         Alert.alert(
-          '✓ Super Flash actualizado',
+          '✓ TV Nueva actualizado',
           `Tienes la versión más reciente (v${versionInfo.version}).`
         );
       }
@@ -338,7 +338,7 @@ const downloadAndInstall = async (data) => {
       lastDownloadedApkUri = existingUri;
       Alert.alert(
         'APK ya descargado',
-        `Super Flash v${data.version} ya está descargado. ¿Quieres abrir el instalador ahora?`,
+        `TV Nueva v${data.version} ya está descargado. ¿Quieres abrir el instalador ahora?`,
         [
           { text: 'Cancelar', style: 'cancel' },
           { text: 'Instalar', onPress: () => retryInstall(existingUri) },
@@ -354,7 +354,7 @@ const downloadAndInstall = async (data) => {
 
     Alert.alert(
       '⬇️ Descargando actualización',
-      `Descargando Super Flash v${data.version}…\n\nNo presiones varias veces el botón de actualizar.`
+      `Descargando TV Nueva v${data.version}…\n\nNo presiones varias veces el botón de actualizar.`
     );
 
     const task = FileSystem.createDownloadResumable(
@@ -362,7 +362,7 @@ const downloadAndInstall = async (data) => {
       localUri,
       {
         headers: {
-          'User-Agent': 'SuperFlash-Updater/1.0',
+          'User-Agent': 'TVNueva-Updater/1.0',
           Accept: `${APK_MIME},application/octet-stream,*/*`,
         },
       },

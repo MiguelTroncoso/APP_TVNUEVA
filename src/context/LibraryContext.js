@@ -56,7 +56,7 @@ export const LibraryProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const storageKey = useMemo(() => (
-    activeProfile?.id ? `superflash_library_v2_${activeProfile.id}` : null
+    activeProfile?.id ? `tvnueva_library_v2_${activeProfile.id}` : null
   ), [activeProfile?.id]);
 
   useEffect(() => { loadLibrary(); }, [storageKey]);
@@ -93,7 +93,7 @@ export const LibraryProvider = ({ children }) => {
         setWatchStats(parsed.watchStats || []);
         setWatchlist(parsed.watchlist || []);
       } else {
-        const oldKey = `superflash_library_${activeProfile.id}`;
+        const oldKey = `tvnueva_library_${activeProfile.id}`;
         const oldStored = await AsyncStorage.getItem(oldKey);
         if (oldStored) {
           const oldParsed = JSON.parse(oldStored);

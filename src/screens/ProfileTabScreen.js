@@ -22,8 +22,8 @@ import {
   setNotificationsEnabled,
 } from '../services/notifications';
 
-const THEME_KEY    = 'superflash_theme';
-const KIDS_LIMIT_KEY = 'superflash_kids_limit_minutes';
+const THEME_KEY    = 'tvnueva_theme';
+const KIDS_LIMIT_KEY = 'tvnueva_kids_limit_minutes';
 
 const MenuItem = ({ emoji, label, subtitle, onPress, accent, right, hasTVPreferredFocus = false }) => (
   <FocusableButton

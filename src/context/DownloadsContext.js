@@ -9,10 +9,10 @@ import logger from '../utils/logger';
 
 const DownloadsContext = createContext();
 
-const STORAGE_PREFIX = 'superflash_private_downloads_v3';
+const STORAGE_PREFIX = 'tvnueva_private_downloads_v3';
 const MIN_VALID_BYTES = 50 * 1024;
 
-const getVaultDir = () => `${FileSystem.documentDirectory}.superflash_vault/`;
+const getVaultDir = () => `${FileSystem.documentDirectory}.tvnueva_vault/`;
 const safeValue = (value = '') => String(value).replace(/[^a-zA-Z0-9_-]/g, '_');
 
 const normalizeType = (type) => {

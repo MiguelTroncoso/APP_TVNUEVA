@@ -1,5 +1,5 @@
 /**
- * responsive.js - Layout reactivo para Super Flash
+ * responsive.js - Layout reactivo para TV Nueva
  *
  * Antes, src/utils/tv.js calculaba columnas, tamano de poster y tipografias
  * UNA sola vez al arrancar la app, leyendo Dimensions.get('window').

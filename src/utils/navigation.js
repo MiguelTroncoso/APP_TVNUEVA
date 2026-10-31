@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 
 /**
  * resetInsideApp
- * Mantiene la navegación dentro de Super Flash aunque Android haya quedado con un stack vacío.
+ * Mantiene la navegación dentro de TV Nueva aunque Android haya quedado con un stack vacío.
  */
 export const resetInsideApp = (navigation, routeName = 'Home', params = undefined) => {
   const tabRoutes = new Set(['Home', 'LiveTV', 'Movies', 'Series', 'ProfileTab', 'MainTabs']);

@@ -167,7 +167,7 @@ export default function LiveTVScreen({ navigation, route }) {
   };
 
   useEffect(() => {
-    AsyncStorage.getItem('superflash_pinned_channels')
+    AsyncStorage.getItem('tvnueva_pinned_channels')
       .then(raw => { if (raw) setPinnedIds(JSON.parse(raw)); })
       .catch(() => {});
   }, []);
@@ -178,7 +178,7 @@ export default function LiveTVScreen({ navigation, route }) {
       ? pinnedIds.filter(i => i !== id)
       : [id, ...pinnedIds].slice(0, 30);
     setPinnedIds(next);
-    await AsyncStorage.setItem('superflash_pinned_channels', JSON.stringify(next)).catch(() => {});
+    await AsyncStorage.setItem('tvnueva_pinned_channels', JSON.stringify(next)).catch(() => {});
   };
 
   const isPinned = (ch) => pinnedIds.includes(String(ch.stream_id || ch.name));

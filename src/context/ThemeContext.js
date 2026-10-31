@@ -5,7 +5,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const THEME_KEY = 'superflash_theme';
+const THEME_KEY = 'tvnueva_theme';
 
 export const THEMES = {
   dark: {

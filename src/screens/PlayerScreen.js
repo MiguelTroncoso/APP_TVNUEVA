@@ -1166,7 +1166,7 @@ export default function PlayerScreen({ route, navigation }) {
     try {
       const raw = stream?.raw || stream || {};
       const id = `${type}-${raw.stream_id || raw.series_id || raw.id || raw.name || Date.now()}`;
-      const stored = await AsyncStorage.getItem('superflash_content_ratings_v1');
+      const stored = await AsyncStorage.getItem('tvnueva_content_ratings_v1');
       const parsed = stored ? JSON.parse(stored) : [];
       const next = [{
         id,
@@ -1175,7 +1175,7 @@ export default function PlayerScreen({ route, navigation }) {
         name: raw.name || raw.title || 'Sin nombre',
         ratedAt: new Date().toISOString(),
       }, ...parsed.filter(row => row.id !== id)].slice(0, 500);
-      await AsyncStorage.setItem('superflash_content_ratings_v1', JSON.stringify(next));
+      await AsyncStorage.setItem('tvnueva_content_ratings_v1', JSON.stringify(next));
     } catch (e) {
       logger.log('Rating save error:', e?.message || e);
     } finally {

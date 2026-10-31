@@ -1,5 +1,5 @@
 /**
- * App.js — Super Flash v1.0.0
+ * App.js — TV Nueva v1.0.0
  *
  * Base: LinkPlay v1.0.40 (rebrand + auditoria + layout responsivo).
  *
@@ -203,7 +203,7 @@ function AppNavigator() {
       if (TAB_ROOT_SCREENS.has(name)) {
         // En un tab raíz → preguntar si salir
         Alert.alert(
-          'Salir de Super Flash',
+          'Salir de TV Nueva',
           '¿Quieres cerrar la aplicación?',
           [
             { text: 'Cancelar', style: 'cancel' },

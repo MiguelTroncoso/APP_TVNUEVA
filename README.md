@@ -1,4 +1,4 @@
-# Super Flash TV
+# TV Nueva
 
 App de streaming para panel IPTV (Xtream Codes), construida con **Expo SDK 54 +
 React Native 0.81 (react-native-tvos)**. Interfaz estilo Netflix: hero
@@ -76,12 +76,12 @@ eas init        # vincula el proyecto y escribe extra.eas.projectId en app.json
 mayor, descarga el APK y abre el instalador de Android.
 
 - Manifiesto remoto:
-  `https://raw.githubusercontent.com/MiguelTroncoso/App_SuperFlash_Tv/main/version.json`
+  `https://raw.githubusercontent.com/MiguelTroncoso/APP_TVNUEVA/main/version.json`
 - APK: se publica como release en este mismo repositorio.
 
 Para publicar una version nueva: subir `app.json` (`version` y `versionCode`),
 `package.json` y `version.json`, compilar el APK y adjuntarlo al release con el
-nombre `SuperFlash-vX.Y.Z.apk` (debe coincidir con `updateUrl`).
+nombre `TVNueva-vX.Y.Z.apk` (debe coincidir con `updateUrl`).
 
 ---
 

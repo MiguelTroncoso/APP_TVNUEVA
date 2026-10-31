@@ -20,7 +20,7 @@ import { isTV, layout } from '../utils/tv';
 import logger from '../utils/logger';
 import { safeBack, useSafeHardwareBack } from '../utils/navigation';
 
-const HISTORY_KEY = 'superflash_search_history';
+const HISTORY_KEY = 'tvnueva_search_history';
 const MAX_HISTORY = 10;
 
 export default function SearchScreen({ route, navigation }) {

@@ -375,7 +375,7 @@ export default function HomeScreen({ navigation, route }) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator color={colors.accent} size="large" />
-        <Text style={styles.loadingText}>Cargando Super Flash...</Text>
+        <Text style={styles.loadingText}>Cargando TV Nueva...</Text>
         <Text style={styles.loadingSubText}>Optimizando contenido para tu dispositivo</Text>
       </View>
     );
@@ -641,7 +641,7 @@ export default function HomeScreen({ navigation, route }) {
         </FocusableButton>
 
         <Text style={styles.versionText}>
-          Super Flash v{versionInfo.version} · {isTV ? 'Modo TV' : 'Modo móvil'}
+          TV Nueva v{versionInfo.version} · {isTV ? 'Modo TV' : 'Modo móvil'}
         </Text>
       </ScrollView>
       {screensaverActive && (

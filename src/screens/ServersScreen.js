@@ -17,7 +17,7 @@ import FocusableButton from '../components/FocusableButton';
 import { safeBack, useSafeHardwareBack } from '../utils/navigation';
 import { isTV, layout } from '../utils/tv';
 
-const SERVERS_KEY   = 'superflash_saved_servers';
+const SERVERS_KEY   = 'tvnueva_saved_servers';
 const SERVER_URL    = 'http://superflash.ovh:80';
 
 const safeKey = (str) => str.replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 40);
@@ -69,7 +69,7 @@ export default function ServersScreen({ navigation }) {
         info:     result.userInfo,
       };
       // Guardar contraseña en SecureStore
-      await SecureStore.setItemAsync(`superflash_srv_${id}`, formPass.trim()).catch(() => {});
+      await SecureStore.setItemAsync(`tvnueva_srv_${id}`, formPass.trim()).catch(() => {});
       const updated = [...servers.filter(s => s.username !== formUser.trim()), newServer];
       await saveServers(updated);
       setShowForm(false);
@@ -85,7 +85,7 @@ export default function ServersScreen({ navigation }) {
   const switchToServer = async (srv) => {
     setLoading(true);
     try {
-      const pass = await SecureStore.getItemAsync(`superflash_srv_${srv.id}`).catch(() => '');
+      const pass = await SecureStore.getItemAsync(`tvnueva_srv_${srv.id}`).catch(() => '');
       const result = await signIn(srv.url, srv.username, pass || '');
       if (result.success) {
         navigation.replace('Home');
@@ -104,7 +104,7 @@ export default function ServersScreen({ navigation }) {
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Eliminar', style: 'destructive', onPress: async () => {
-          await SecureStore.deleteItemAsync(`superflash_srv_${srv.id}`).catch(() => {});
+          await SecureStore.deleteItemAsync(`tvnueva_srv_${srv.id}`).catch(() => {});
           await saveServers(servers.filter(s => s.id !== srv.id));
         }},
       ]

@@ -5,7 +5,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const TIMER_KEY = 'superflash_kids_timer';
+const TIMER_KEY = 'tvnueva_kids_timer';
 
 const todayKey = () => {
   const d = new Date();

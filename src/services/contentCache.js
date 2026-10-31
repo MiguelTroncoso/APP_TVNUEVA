@@ -12,7 +12,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import logger from '../utils/logger';
 
-const CACHE_PREFIX = 'superflash_content_cache_v2';
+const CACHE_PREFIX = 'tvnueva_content_cache_v2';
 
 const TTL_MAP = {
   live:    1000 * 60 * 30,       // 30 min

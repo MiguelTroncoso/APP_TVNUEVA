@@ -5,7 +5,7 @@ import logger from '../utils/logger';
 
 const ProfileContext = createContext();
 const MAX_PROFILES = 5;
-const PROFILES_KEY = 'superflash_profiles_v2';
+const PROFILES_KEY = 'tvnueva_profiles_v2';
 
 export const ProfileProvider = ({ children }) => {
   const [profiles, setProfiles] = useState([]);
@@ -25,11 +25,11 @@ export const ProfileProvider = ({ children }) => {
       }
       // Migrar desde SecureStore si existe (primera vez después de actualización)
       try {
-        const oldStored = await SecureStore.getItemAsync('superflash_profiles');
+        const oldStored = await SecureStore.getItemAsync('tvnueva_profiles');
         if (oldStored) {
           const parsed = JSON.parse(oldStored);
           await AsyncStorage.setItem(PROFILES_KEY, JSON.stringify(parsed));
-          await SecureStore.deleteItemAsync('superflash_profiles').catch(() => {});
+          await SecureStore.deleteItemAsync('tvnueva_profiles').catch(() => {});
           setProfiles(parsed);
         }
       } catch (_) {}

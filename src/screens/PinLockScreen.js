@@ -12,7 +12,7 @@ import * as SecureStore from 'expo-secure-store';
 import { colors } from '../theme';
 import BrandLogo from '../components/BrandLogo';
 
-const APP_PIN_KEY  = 'superflash_app_pin';
+const APP_PIN_KEY  = 'tvnueva_app_pin';
 const MAX_ATTEMPTS = 5;
 
 export default function PinLockScreen({ onUnlocked, route, navigation }) {
