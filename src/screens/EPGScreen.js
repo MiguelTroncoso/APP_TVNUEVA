@@ -3,13 +3,14 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, TextInput, Image }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
-import { getLiveStreams, getShortEPG, isAdultContent } from '../services/xtream';
+import { getShortEPG, isAdultContent } from '../services/xtream';
 import { getCache, saveCache } from '../services/contentCache';
 import { colors, shadows } from '../theme';
 import FocusableButton from '../components/FocusableButton';
 import { isTV, layout } from '../utils/tv';
 import { safeBack, useSafeHardwareBack } from '../utils/navigation';
 import logger from '../utils/logger';
+import { getLiveStreamsAll, getLiveCategoriesAll, authFor, isCategoryHidden } from '../services/providers';
 
 const decodeBase64Utf8 = (encoded = '') => {
   const decoded = global.atob(encoded);
@@ -51,11 +52,12 @@ export default function EPGScreen({ navigation }) {
 
   useEffect(() => { loadChannels(); }, []);
 
-  const sanitize = (items = []) => (
-    activeProfile?.isKids
-      ? items.filter(c => !isAdultContent(c.category_name || '', c.name || ''))
-      : items
-  );
+  const sanitize = (items = []) => {
+    const visible = items.filter(c => !isCategoryHidden(c.category_id));
+    return activeProfile?.isKids
+      ? visible.filter(c => !isAdultContent(c.category_name || '', c.name || ''))
+      : visible;
+  };
 
   const loadChannels = async (forceRefresh = false) => {
     try {
@@ -71,7 +73,7 @@ export default function EPGScreen({ navigation }) {
           if (cached.isFresh) return;
         }
       }
-      const data = await getLiveStreams(server.url, user.username, user.password);
+      const data = await getLiveStreamsAll(server.url, user.username, user.password);
       const raw = Array.isArray(data) ? data : [];
       const list = sanitize(raw);
       setChannels(list);
@@ -91,7 +93,7 @@ export default function EPGScreen({ navigation }) {
     setSelected(channel);
     setEpgLoading(true);
     try {
-      const key = `stream-${channel.stream_id}`;
+      const key = `stream-${channel.provider || 'p1'}-${channel.stream_id}`;
       if (!forceRefresh) {
         const cached = await getCache(server.url, user.username, 'epg', key);
         if (isStale()) return;
@@ -100,7 +102,8 @@ export default function EPGScreen({ navigation }) {
           if (cached.isFresh) { setEpgLoading(false); return; }
         }
       }
-      const data = await getShortEPG(server.url, user.username, user.password, channel.stream_id, 50);
+      const auth = authFor(channel, { server: server.url, username: user.username, password: user.password });
+      const data = await getShortEPG(auth.server, auth.username, auth.password, channel.stream_id, 50);
       if (isStale()) return;
       const list = Array.isArray(data) ? data : [];
       setEpg(list);

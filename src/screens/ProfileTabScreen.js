@@ -161,6 +161,7 @@ export default function ProfileTabScreen({ navigation, route }) {
           <Text style={styles.sectionTitle}>Explorar</Text>
           <MenuItem emoji="🔍" label="Búsqueda global" onPress={() => navigation.navigate('Search')} />
           <MenuItem emoji="🔥" label="Eventos en vivo" onPress={() => navigation.navigate('Events')} />
+          <MenuItem emoji="🌐" label="Proveedores y categorías" subtitle="Segundo proveedor y ocultar categorías" onPress={() => navigation.navigate('Providers')} />
           <MenuItem emoji="📅" label="Guía EPG" onPress={() => navigation.navigate('EPG')} />
           <MenuItem emoji="📊" label="Estadísticas" onPress={() => navigation.navigate('Stats')} />
         </View>

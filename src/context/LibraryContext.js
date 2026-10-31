@@ -7,7 +7,7 @@ const LibraryContext = createContext();
 
 const buildItemId = (item, type) => {
   const rawId = item?.stream_id || item?.series_id || item?.id || item?.name || Date.now();
-  return `${type}-${rawId}`;
+  return `${type}-${item?.provider === 'p2' ? 'p2-' : ''}${rawId}`;
 };
 
 const buildEpisodeWatchId = (serie, episode) => {
@@ -22,6 +22,7 @@ const normalizeItem = (item, type) => {
     id: buildItemId(raw, type),
     type,
     stream_id: raw.stream_id || null,
+    provider: raw.provider || null,
     series_id: raw.series_id || null,
     episode_id: raw.id || null,
     name: raw.name || raw.title || 'Sin nombre',
@@ -32,6 +33,7 @@ const normalizeItem = (item, type) => {
     container_extension: raw.container_extension || raw.info?.container_extension || 'mp4',
     raw: {
       stream_id: raw.stream_id || null,
+      provider: raw.provider || null,
       series_id: raw.series_id || null,
       id: raw.id || null,
       name: raw.name || raw.title || '',

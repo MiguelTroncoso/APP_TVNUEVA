@@ -5,12 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
 import { useLibrary } from '../context/LibraryContext';
-import { getLiveCategories, getLiveStreams, isAdultContent, getShortEPG } from '../services/xtream';
+import { isAdultContent, getShortEPG } from '../services/xtream';
 import { deriveCategoriesFromItems, getCache, mergeCategories, saveCache, withCategoryNames } from '../services/contentCache';
 import { colors, shadows } from '../theme';
 import FocusableButton from '../components/FocusableButton';
 import { isTV, layout } from '../utils/tv';
 import logger from '../utils/logger';
+import { getLiveStreamsAll, getLiveCategoriesAll, authFor, isCategoryHidden } from '../services/providers';
 import { safeBack, useFilterAwareHardwareBack } from '../utils/navigation';
 import { cleanCategoryName, compactCategoryName } from '../utils/labels';
 
@@ -73,7 +74,7 @@ export default function LiveTVScreen({ navigation, route }) {
   useEffect(() => { loadData(); }, []);
 
   const sanitize = (items = [], cats = categories) => {
-    let data = withCategoryNames(items, cats);
+    let data = withCategoryNames(items, cats).filter(c => !isCategoryHidden(c.category_id));
     if (activeProfile?.isKids) data = data.filter(channel => !isAdultContent(channel.category_name || '', channel.name || ''));
     return data;
   };
@@ -100,7 +101,7 @@ export default function LiveTVScreen({ navigation, route }) {
         setUsingCache(true);
         setLoading(false);
         if (cached.isFresh) {
-          getLiveCategories(server.url, user.username, user.password)
+          getLiveCategoriesAll(server.url, user.username, user.password)
             .then((cats) => {
               const safeCats = activeProfile?.isKids
                 ? cats.filter(cat => !isAdultContent(cat.category_name || '', ''))
@@ -120,8 +121,8 @@ export default function LiveTVScreen({ navigation, route }) {
 
       // Cargar categorías y canales en paralelo (antes era en serie)
       const [catsResult, streamsResult] = await Promise.allSettled([
-        getLiveCategories(server.url, user.username, user.password),
-        getLiveStreams(server.url, user.username, user.password),
+        getLiveCategoriesAll(server.url, user.username, user.password),
+        getLiveStreamsAll(server.url, user.username, user.password),
       ]);
 
       const cats = catsResult.status === 'fulfilled' && Array.isArray(catsResult.value) ? catsResult.value : [];

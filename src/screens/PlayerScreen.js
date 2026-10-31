@@ -29,6 +29,7 @@ import { useProfile } from '../context/ProfileContext';
 import { useLibrary } from '../context/LibraryContext';
 import { useDownloads } from '../context/DownloadsContext';
 import { getStreamUrl, isAdultContent } from '../services/xtream';
+import { authFor } from '../services/providers';
 import { isTV } from '../utils/tv';
 import { colors } from '../theme';
 import PinModal from '../components/PinModal';
@@ -463,8 +464,9 @@ export default function PlayerScreen({ route, navigation }) {
 
   // ─── URL del stream ───────────────────────────────────────────────────────
   const playbackExtension = getPlaybackExtension(stream, type);
+  const streamAuth = authFor(stream, { server: server.url, username: user.username, password: user.password });
   const streamUrl = offlineUri || getStreamUrl(
-    server.url, user.username, user.password,
+    streamAuth.server, streamAuth.username, streamAuth.password,
     stream.stream_id || stream.id,
     type,
     playbackExtension

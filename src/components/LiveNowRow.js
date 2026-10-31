@@ -4,6 +4,7 @@ import FocusableButton from './FocusableButton';
 import { colors } from '../theme';
 import { layout } from '../utils/tv';
 import { getShortEPG } from '../services/xtream';
+import { authFor } from '../services/providers';
 import { pickCurrentProgram } from '../utils/epgText';
 
 const MAX_EPG_LOOKUPS = 12;
@@ -12,15 +13,17 @@ const MAX_EPG_LOOKUPS = 12;
 export default function LiveNowRow({ title, channels, auth, onPress }) {
   const [epg, setEpg] = useState({});
   const visible = (channels || []).slice(0, MAX_EPG_LOOKUPS);
-  const key = visible.map(c => c.stream_id).join(',');
+  const chKey = (c) => `${c.provider || 'p1'}-${c.stream_id}`;
+  const key = visible.map(chKey).join(',');
 
   useEffect(() => {
     let cancelled = false;
     visible.forEach(async (ch) => {
-      const listings = await getShortEPG(auth.server, auth.username, auth.password, ch.stream_id, 3);
+      const a = authFor(ch, auth);
+      const listings = await getShortEPG(a.server, a.username, a.password, ch.stream_id, 3);
       if (cancelled) return;
       const now = pickCurrentProgram(listings);
-      if (now) setEpg(prev => ({ ...prev, [ch.stream_id]: now }));
+      if (now) setEpg(prev => ({ ...prev, [chKey(ch)]: now }));
     });
     return () => { cancelled = true; };
   }, [key]);
@@ -33,11 +36,11 @@ export default function LiveNowRow({ title, channels, auth, onPress }) {
       <FlatList
         horizontal
         data={visible}
-        keyExtractor={(ch) => String(ch.stream_id)}
+        keyExtractor={chKey}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => {
-          const now = epg[item.stream_id];
+          const now = epg[chKey(item)];
           return (
             <FocusableButton style={styles.card} focusedStyle={styles.cardFocused} onPress={() => onPress(item)}>
               <View style={styles.top}>

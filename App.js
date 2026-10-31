@@ -34,6 +34,8 @@ import { DownloadsProvider } from './src/context/DownloadsContext';
 import LoginScreen from './src/screens/LoginScreen';
 import ProfileSelectScreen from './src/screens/ProfileSelectScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import { initProviders } from './src/services/providers';
+import ProvidersScreen from './src/screens/ProvidersScreen';
 import TVSideMenu from './src/components/TVSideMenu';
 import LiveTVScreen from './src/screens/LiveTVScreen';
 import MoviesScreen from './src/screens/MoviesScreen';
@@ -182,6 +184,8 @@ function AppNavigator() {
   const isReadyRef    = useRef(false);
   const [currentRouteName, setCurrentRouteName] = useState(null);
 
+  useEffect(() => { initProviders(); }, []);
+
   // ── PIN LOCK CHECK ───────────────────────────────────────────────────────
   useEffect(() => {
     PinLockScreen.hasPin().then(has => {
@@ -278,6 +282,7 @@ function AppNavigator() {
             <Stack.Screen name="Events"            component={EventsScreen} />
             <Stack.Screen name="Search"            component={SearchScreen} />
             <Stack.Screen name="Servers"           component={ServersScreen} />
+            <Stack.Screen name="Providers"        component={ProvidersScreen} />
             <Stack.Screen name="LiveTV"           component={LiveTVScreen} />
             <Stack.Screen name="EPG"               component={EPGScreen} />
             <Stack.Screen name="Stats"             component={StatsScreen} />

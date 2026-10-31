@@ -11,12 +11,13 @@ import { useDownloads } from '../context/DownloadsContext';
 import { colors } from '../theme';
 import { checkForUpdates } from '../services/updater';
 import { checkForNewContent } from '../services/notifications';
-import { getLiveStreams, getVodStreams, getSeries, isAdultContent } from '../services/xtream';
+import { getVodStreams, getSeries, isAdultContent } from '../services/xtream';
 import { getCache, saveCache, pickHomeHighlights } from '../services/contentCache';
 import HeroCarousel from '../components/HeroCarousel';
 import ContentRow from '../components/ContentRow';
 import SportsRow from '../components/SportsRow';
 import FocusableButton from '../components/FocusableButton';
+import { getLiveStreamsAll } from '../services/providers';
 import LiveNowRow from '../components/LiveNowRow';
 import ContinueBanner from '../components/ContinueBanner';
 import BrandLogo from '../components/BrandLogo';
@@ -226,13 +227,13 @@ export default function HomeScreen({ navigation, route }) {
     [favorites]
   );
   const recentChannels = useMemo(() => {
-    const byId = new Map(liveChannels.map(c => [String(c.stream_id), c]));
+    const byId = new Map(liveChannels.map(c => [`live-${c.provider === 'p2' ? 'p2-' : ''}${c.stream_id}`, c]));
     const seen = new Set();
     const out = [];
     for (const row of watchStats) {
       if (row.type !== 'live' || seen.has(row.itemId)) continue;
       seen.add(row.itemId);
-      const ch = byId.get(String(row.itemId).replace('live-', ''));
+      const ch = byId.get(String(row.itemId));
       if (ch) out.push(ch);
       if (out.length >= 12) break;
     }
@@ -278,7 +279,7 @@ export default function HomeScreen({ navigation, route }) {
       const hasContent = liveChannels.length || movies.length || series.length;
       if (!hasContent) setLoading(true);
 
-      const fetchLive = getLiveStreams(server.url, user.username, user.password)
+      const fetchLive = getLiveStreamsAll(server.url, user.username, user.password)
         .then(data => {
           const liveData = applyKidsFilter(data).slice(0, MAX_HOME_LIVE_CHANNELS);
           setLiveChannels(liveData);
