@@ -59,6 +59,7 @@
         }
       ],
       "expo-asset",
+      "./plugins/withMediaRouterPin",
       [
         "expo-build-properties",
         {
