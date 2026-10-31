@@ -17,7 +17,6 @@ import { deriveCategoriesFromItems, getCache, mergeCategories, saveCache, withCa
 import { colors } from '../theme';
 import ContentRow from '../components/ContentRow';
 import FocusableButton from '../components/FocusableButton';
-import TVTopNav from '../components/TVTopNav';
 import { isTV, isTablet, layout, useResponsive } from '../utils/tv';
 import logger from '../utils/logger';
 import { safeBack, useFilterAwareHardwareBack } from '../utils/navigation';
@@ -224,7 +223,6 @@ export default function MoviesScreen({ navigation, route }) {
 
   const libraryHeader = useMemo(() => (
     <View>
-      <TVTopNav navigation={navigation} current="Movies" preferContentFocus={preferContentFocus} />
       <View style={styles.header}>
         <FocusableButton onPress={handleBackPress} style={styles.backBtn}>
           <Text style={styles.backText}>← Volver</Text>

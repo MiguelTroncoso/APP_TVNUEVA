@@ -9,7 +9,6 @@
  *   ├── Profiles
  *   └── MainTabs  ← Tab Navigator principal
  *         ├── Home
- *         ├── LiveTV
  *         ├── Movies
  *         ├── Series
  *         └── ProfileTab
@@ -35,6 +34,7 @@ import { DownloadsProvider } from './src/context/DownloadsContext';
 import LoginScreen from './src/screens/LoginScreen';
 import ProfileSelectScreen from './src/screens/ProfileSelectScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import TVSideMenu from './src/components/TVSideMenu';
 import LiveTVScreen from './src/screens/LiveTVScreen';
 import MoviesScreen from './src/screens/MoviesScreen';
 import SeriesScreen from './src/screens/SeriesScreen';
@@ -114,8 +114,10 @@ function MainTabs() {
 
   return (
     <Tab.Navigator
+      tabBar={isTV ? (props) => <TVSideMenu {...props} /> : undefined}
       screenOptions={{
         headerShown: false,
+        tabBarPosition: isTV ? 'left' : 'bottom',
         tabBarStyle: isTV ? { display: 'none' } : {
           backgroundColor: theme.tabBar,
           borderTopColor: 'rgba(50,197,255,0.1)',
@@ -136,7 +138,6 @@ function MainTabs() {
       }}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={createTabOptions('Inicio', '🏠')} />
-      <Tab.Screen name="LiveTV" component={LiveTVScreen} options={createTabOptions('TV en vivo', '📺')} />
       <Tab.Screen name="Movies" component={MoviesScreen} options={createTabOptions('Películas', '🎬')} />
       <Tab.Screen name="Series" component={SeriesScreen} options={createTabOptions('Series', '📡')} />
       <Tab.Screen name="ProfileTab" component={ProfileTabScreen} options={createTabOptions('Perfil', '👤')} />
@@ -157,7 +158,7 @@ function LoadingScreen() {
 const PLAYER_SCREENS  = new Set(['Player']);
 const EXIT_SCREENS    = new Set(['Login', 'Profiles']);
 // Pantallas dentro de tabs (el back debe quedar en tabs, no salir)
-const TAB_ROOT_SCREENS = new Set(['Home', 'LiveTV', 'Movies', 'Series', 'ProfileTab']);
+const TAB_ROOT_SCREENS = new Set(['Home', 'Movies', 'Series', 'ProfileTab']);
 
 // ── Navigator principal ───────────────────────────────────────────────────────
 function AppNavigator() {
@@ -277,6 +278,7 @@ function AppNavigator() {
             <Stack.Screen name="Events"            component={EventsScreen} />
             <Stack.Screen name="Search"            component={SearchScreen} />
             <Stack.Screen name="Servers"           component={ServersScreen} />
+            <Stack.Screen name="LiveTV"           component={LiveTVScreen} />
             <Stack.Screen name="EPG"               component={EPGScreen} />
             <Stack.Screen name="Stats"             component={StatsScreen} />
             <Stack.Screen name="History"          component={HistoryScreen} />

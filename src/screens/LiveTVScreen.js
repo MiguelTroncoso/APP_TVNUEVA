@@ -9,7 +9,6 @@ import { getLiveCategories, getLiveStreams, isAdultContent, getShortEPG } from '
 import { deriveCategoriesFromItems, getCache, mergeCategories, saveCache, withCategoryNames } from '../services/contentCache';
 import { colors, shadows } from '../theme';
 import FocusableButton from '../components/FocusableButton';
-import TVTopNav from '../components/TVTopNav';
 import { isTV, layout } from '../utils/tv';
 import logger from '../utils/logger';
 import { safeBack, useFilterAwareHardwareBack } from '../utils/navigation';
@@ -202,7 +201,6 @@ export default function LiveTVScreen({ navigation, route }) {
 
   const listHeader = (
     <View>
-      <TVTopNav navigation={navigation} current="LiveTV" preferContentFocus={preferContentFocus} />
       <View style={styles.header}>
         <FocusableButton onPress={handleBackPress} style={styles.backBtn}><Text style={styles.backText}>← Volver</Text></FocusableButton>
         <Text style={styles.title}>TV en vivo</Text>

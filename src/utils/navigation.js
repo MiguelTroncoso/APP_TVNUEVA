@@ -7,7 +7,7 @@ import { useCallback } from 'react';
  * Mantiene la navegación dentro de TV Nueva aunque Android haya quedado con un stack vacío.
  */
 export const resetInsideApp = (navigation, routeName = 'Home', params = undefined) => {
-  const tabRoutes = new Set(['Home', 'LiveTV', 'Movies', 'Series', 'ProfileTab', 'MainTabs']);
+  const tabRoutes = new Set(['Home', 'Movies', 'Series', 'ProfileTab', 'MainTabs']);
 
   // Pantallas que viven dentro del Bottom Tab Navigator.
   // No se pueden pushear como Stack.Screen porque no existen a nivel raíz.

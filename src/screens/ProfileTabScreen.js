@@ -14,7 +14,6 @@ import { THEMES } from '../context/ThemeContext';
 import { isTV, layout } from '../utils/tv';
 import versionInfo from '../../version.json';
 import FocusableButton from '../components/FocusableButton';
-import TVTopNav from '../components/TVTopNav';
 import { getUsedMinutes, formatTimeLeft } from '../services/kidsTimer';
 import PinLockScreen from './PinLockScreen';
 import {
@@ -114,7 +113,6 @@ export default function ProfileTabScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TVTopNav navigation={navigation} current="ProfileTab" preferContentFocus={preferContentFocus} />
       <ScrollView showsVerticalScrollIndicator={false}>
 
         {/* Header */}

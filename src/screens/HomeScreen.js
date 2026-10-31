@@ -17,7 +17,8 @@ import HeroCarousel from '../components/HeroCarousel';
 import ContentRow from '../components/ContentRow';
 import SportsRow from '../components/SportsRow';
 import FocusableButton from '../components/FocusableButton';
-import TVTopNav from '../components/TVTopNav';
+import LiveNowRow from '../components/LiveNowRow';
+import ContinueBanner from '../components/ContinueBanner';
 import BrandLogo from '../components/BrandLogo';
 import Screensaver, { useScreensaver } from '../components/Screensaver';
 import { isTV, isTablet, layout } from '../utils/tv';
@@ -219,6 +220,27 @@ export default function HomeScreen({ navigation, route }) {
     [heroItems, movies, movieEstrenos]
   );
 
+  // Favoritos en vivo y canales recientes (Inicio estilo TIVRA)
+  const favoriteChannels = useMemo(() =>
+    favorites.filter(f => f.type === 'live').map(f => f.raw || f).filter(c => c.stream_id),
+    [favorites]
+  );
+  const recentChannels = useMemo(() => {
+    const byId = new Map(liveChannels.map(c => [String(c.stream_id), c]));
+    const seen = new Set();
+    const out = [];
+    for (const row of watchStats) {
+      if (row.type !== 'live' || seen.has(row.itemId)) continue;
+      seen.add(row.itemId);
+      const ch = byId.get(String(row.itemId).replace('live-', ''));
+      if (ch) out.push(ch);
+      if (out.length >= 12) break;
+    }
+    return out;
+  }, [watchStats, liveChannels]);
+  const epgAuth = useMemo(() => ({ server: server.url, username: user.username, password: user.password }), [server.url, user.username, user.password]);
+  const playLive = useCallback((stream) => playWithResumePrompt(stream, 'live'), [playWithResumePrompt]);
+
   // ─── Carga de datos ───────────────────────────────────────────────────────
 
   const applyHomeData = (live = [], vod = [], ser = [], fromCache = false) => {
@@ -383,7 +405,6 @@ export default function HomeScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <TVTopNav navigation={navigation} current="Home" preferContentFocus={preferContentFocus} />
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -419,7 +440,9 @@ export default function HomeScreen({ navigation, route }) {
         )}
 
         {/* ── HERO CARRUSEL ── */}
-        {heroItems.length > 0 ? (
+        {isTV ? (
+          <ContinueBanner item={continueWatching[0]} onPress={goToLibraryItem} hasTVPreferredFocus={preferContentFocus} />
+        ) : heroItems.length > 0 ? (
           <HeroCarousel
             items={heroItems}
             types={heroTypes}
@@ -438,7 +461,7 @@ export default function HomeScreen({ navigation, route }) {
         ) : null}
 
         {/* ── ACCESOS RÁPIDOS (complementan los tabs) ── */}
-        <View style={styles.navTabs}>
+        {!isTV && <View style={styles.navTabs}>
           {QUICK_TABS.map((tab, index) => (
             <FocusableButton
               key={tab.screen}
@@ -452,7 +475,19 @@ export default function HomeScreen({ navigation, route }) {
               <Text style={styles.navTabText} numberOfLines={1}>{tab.label}</Text>
             </FocusableButton>
           ))}
-        </View>
+        </View>}
+
+        {/* ── CONTINUAR + EN VIVO ── */}
+        <ContentRow
+          title="▶ Continuar viendo"
+          data={continueWatching}
+          type="movie"
+          showProgress
+          onSeeAll={() => navigation.navigate('ContinueWatching')}
+          onPress={goToLibraryItem}
+        />
+        <LiveNowRow title="Ahora en favoritos" channels={favoriteChannels} auth={epgAuth} onPress={playLive} />
+        <LiveNowRow title="Canales recientes" channels={recentChannels} auth={epgAuth} onPress={playLive} />
 
         {/* ── DEPORTES ── */}
         <SportsRow navigation={navigation} liveChannels={liveChannels} />
@@ -499,16 +534,6 @@ export default function HomeScreen({ navigation, route }) {
             onSeeAll={() => navigation.navigate('Series')}
           />
         )}
-
-        {/* ── CONTINUAR VIENDO ── */}
-        <ContentRow
-          title="▶ Continuar viendo"
-          data={continueWatching}
-          type="movie"
-          showProgress
-          onSeeAll={() => navigation.navigate('ContinueWatching')}
-          onPress={goToLibraryItem}
-        />
 
         {/* ── ESTRENOS PELÍCULAS ── */}
         {movieEstrenos.length > 0 && (
