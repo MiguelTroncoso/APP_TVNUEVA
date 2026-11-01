@@ -6,7 +6,6 @@
  * Arquitectura de navegación:
  * Stack (raíz)
  *   ├── Login
- *   ├── Profiles
  *   └── MainTabs  ← Tab Navigator principal
  *         ├── Home
  *         ├── Movies
@@ -32,7 +31,6 @@ import { DownloadsProvider } from './src/context/DownloadsContext';
 
 // ── Screens ──────────────────────────────────────────────────────────────────
 import LoginScreen from './src/screens/LoginScreen';
-import ProfileSelectScreen from './src/screens/ProfileSelectScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import { initProviders } from './src/services/providers';
 import ProvidersScreen from './src/screens/ProvidersScreen';
@@ -158,7 +156,7 @@ function LoadingScreen() {
 
 // ── Pantallas que NO son tab (no muestran tab bar) ────────────────────────────
 const PLAYER_SCREENS  = new Set(['Player']);
-const EXIT_SCREENS    = new Set(['Login', 'Profiles']);
+const EXIT_SCREENS    = new Set(['Login']);
 // Pantallas dentro de tabs (el back debe quedar en tabs, no salir)
 const TAB_ROOT_SCREENS = new Set(['Home', 'Movies', 'Series', 'ProfileTab']);
 
@@ -260,14 +258,11 @@ function AppNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
         {!user ? (
           <Stack.Screen name="Login" component={LoginScreen} />
-        ) : !activeProfile ? (
-          <Stack.Screen name="Profiles" component={ProfileSelectScreen} />
         ) : (
           <>
             {/* Tab root — engloba los 5 tabs */}
             <Stack.Screen name="MainTabs" component={MainTabs} options={{ animation: 'none' }} />
             {/* Screens que se apilan sobre los tabs */}
-            <Stack.Screen name="Profiles" component={ProfileSelectScreen} />
             <Stack.Screen name="SeriesDetail" component={SeriesDetailScreen} />
             <Stack.Screen
               name="Player"

@@ -25,20 +25,14 @@ export const ProfileProvider = ({ children }) => {
         setProfiles(list);
         // Entrar directo: último perfil usado, o el único que exista.
         const lastId = await AsyncStorage.getItem(LAST_PROFILE_KEY).catch(() => null);
-        const auto = list.find(p => p.id === lastId) || (list.length === 1 ? list[0] : null);
-        if (auto) setActiveProfile(auto);
-        return;
+        const auto = list.find(p => p.id === lastId) || list[0];
+        if (auto) { setActiveProfile(auto); return; }
       }
-      // Migrar desde SecureStore si existe (primera vez después de actualización)
-      try {
-        const oldStored = await SecureStore.getItemAsync('tvnueva_profiles');
-        if (oldStored) {
-          const parsed = JSON.parse(oldStored);
-          await AsyncStorage.setItem(PROFILES_KEY, JSON.stringify(parsed));
-          await SecureStore.deleteItemAsync('tvnueva_profiles').catch(() => {});
-          setProfiles(parsed);
-        }
-      } catch (_) {}
+      // La app no usa perfiles: siempre hay uno interno por defecto.
+      const def = { id: 'default', name: 'Principal', isKids: false, pin: null, avatar: '👤', createdAt: new Date().toISOString() };
+      await AsyncStorage.setItem(PROFILES_KEY, JSON.stringify([def]));
+      setProfiles([def]);
+      setActiveProfile(def);
     } catch (e) {
       logger.log('Error cargando perfiles:', e);
     } finally {

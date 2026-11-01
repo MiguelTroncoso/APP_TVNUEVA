@@ -83,7 +83,7 @@ const byRating = (a, b) => {
 
 export default function HomeScreen({ navigation, route }) {
   const { user, server, signOut, checkSession } = useAuth();
-  const { activeProfile, changeProfile } = useProfile();
+  const { activeProfile } = useProfile();
   const { favorites, continueWatching, watchStats, isFavorite, toggleFavorite, getContinueWatchingItem } = useLibrary();
   const { downloads } = useDownloads();
 
@@ -318,10 +318,6 @@ export default function HomeScreen({ navigation, route }) {
     }
   };
 
-  const handleChangeProfile = () => {
-    changeProfile(); // el navegador muestra la selección de perfil solo
-  };
-
   const playWithResumePrompt = useCallback((stream, type = 'movie', options = {}) => {
     const { resumeItem: forcedResumeItem, ...playerOptions } = options;
     if (type === 'live') {
@@ -421,10 +417,6 @@ export default function HomeScreen({ navigation, route }) {
         <View style={styles.header}>
           <BrandLogo variant="nav" style={styles.logo} />
           <View style={styles.headerRight}>
-            <FocusableButton style={styles.profilePill} onPress={handleChangeProfile}>
-              <Text style={styles.profileAvatar}>{activeProfile?.avatar || '👤'}</Text>
-              <Text style={styles.profileName} numberOfLines={1}>{activeProfile?.name || 'Perfil'}</Text>
-            </FocusableButton>
             <FocusableButton style={styles.searchBtn} onPress={() => navigation.navigate('Search')}>
               <Text style={styles.searchBtnText}>🔍</Text>
             </FocusableButton>
