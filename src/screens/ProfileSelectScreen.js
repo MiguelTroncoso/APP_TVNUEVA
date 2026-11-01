@@ -76,23 +76,16 @@ export default function ProfileSelectScreen({ navigation }) {
   const resetForm = () => { setName(''); setPin(''); setIsKids(false); setAvatar('👤'); setEditingProfile(null); };
 
   const handleSelectProfile = async (profile) => {
-    if (profile.pin) {
-      setSelectedForPin(profile);
-      setEnteredPin('');
-      setShowPinModal(true);
-    } else {
-      await selectProfile(profile);
-      navigation.replace('MainTabs');
-    }
+    // El navegador cambia solo a MainTabs cuando hay perfil activo.
+    await selectProfile(profile);
   };
 
   const handlePinConfirm = async (enteredPinValue) => {
     const pinToCheck = enteredPinValue || enteredPin;
-    const result = await selectProfile(selectedForPin, pinToCheck);
+    const result = await selectProfile(selectedForPin);
     if (result.success) {
       setShowPinModal(false);
       setEnteredPin('');
-      navigation.replace('MainTabs');
     } else {
       Alert.alert('PIN incorrecto', 'Intentá de nuevo');
       setEnteredPin('');
@@ -148,7 +141,7 @@ export default function ProfileSelectScreen({ navigation }) {
                 profile.isKids && styles.avatarKids,
               ]}>
                 <Text style={[styles.avatar, { fontSize: avatarSize * 0.45 }]}>{profile.avatar}</Text>
-                {profile.pin && <Text style={styles.pinIcon}>🔒</Text>}
+                
               </View>
               <Text style={styles.profileName} numberOfLines={1}>{profile.name}</Text>
               {profile.isKids && <Text style={styles.kidsLabel}>KIDS</Text>}

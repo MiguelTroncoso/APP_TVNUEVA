@@ -6,6 +6,7 @@ import logger from '../utils/logger';
 const ProfileContext = createContext();
 const MAX_PROFILES = 5;
 const PROFILES_KEY = 'tvnueva_profiles_v2';
+const LAST_PROFILE_KEY = 'tvnueva_last_profile';
 
 export const ProfileProvider = ({ children }) => {
   const [profiles, setProfiles] = useState([]);
@@ -20,7 +21,12 @@ export const ProfileProvider = ({ children }) => {
       // Leer desde AsyncStorage (más confiable que SecureStore para datos no sensibles)
       const stored = await AsyncStorage.getItem(PROFILES_KEY);
       if (stored) {
-        setProfiles(JSON.parse(stored));
+        const list = JSON.parse(stored);
+        setProfiles(list);
+        // Entrar directo: último perfil usado, o el único que exista.
+        const lastId = await AsyncStorage.getItem(LAST_PROFILE_KEY).catch(() => null);
+        const auto = list.find(p => p.id === lastId) || (list.length === 1 ? list[0] : null);
+        if (auto) setActiveProfile(auto);
         return;
       }
       // Migrar desde SecureStore si existe (primera vez después de actualización)
@@ -81,18 +87,11 @@ export const ProfileProvider = ({ children }) => {
     }
   };
 
-  const selectProfile = async (profile, enteredPin = null) => {
-    if (profile.pin && profile.pin !== enteredPin) {
-      return { success: false, error: 'PIN incorrecto' };
-    }
+  // Sin PIN por perfil: elegir un perfil entra directo y se recuerda para el próximo arranque.
+  const selectProfile = async (profile) => {
     setActiveProfile(profile);
-    // Si el perfil no es kids y tiene PIN que ya fue validado,
-    // considerarlo como adulto desbloqueado — evita pedir el PIN dos veces
-    if (!profile.isKids && profile.pin && profile.pin === enteredPin) {
-      setAdultUnlocked(true);
-    } else {
-      setAdultUnlocked(false);
-    }
+    setAdultUnlocked(false);
+    AsyncStorage.setItem(LAST_PROFILE_KEY, profile.id).catch(() => {});
     return { success: true };
   };
 

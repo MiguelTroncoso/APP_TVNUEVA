@@ -319,8 +319,7 @@ export default function HomeScreen({ navigation, route }) {
   };
 
   const handleChangeProfile = () => {
-    changeProfile();
-    navigation.replace('Profiles');
+    changeProfile(); // el navegador muestra la selección de perfil solo
   };
 
   const playWithResumePrompt = useCallback((stream, type = 'movie', options = {}) => {
